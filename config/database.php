@@ -1,4 +1,5 @@
 <?php
+session_start();
 $dsn='mysql:dbname=ctf;host=localhost';
 $user='ctf';
 $password='ctf';
