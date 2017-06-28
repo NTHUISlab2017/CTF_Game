@@ -1,1 +1,2 @@
-./webterm_server/node-webterm/node_modules/*
+webterm_server/node-webterm/node_modules/*
+
