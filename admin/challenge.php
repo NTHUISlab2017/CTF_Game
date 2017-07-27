@@ -2,24 +2,46 @@
 	if ($_POST) {
           
           require_once('config/database.php');
-          
+		  
           $Name=$_POST['Name'];
           $Point=$_POST['Point'];
           $Description=$_POST['Description'];
           $Flag=$_POST['Flag'];
           
-           
-          $sql = "INSERT INTO Challenge VALUES(NULL,:Name,:Point,:Description,:Flag)";
-          $statement = $pdo->prepare($sql);
-          $statement->bindParam(':Name',$Name);
-          $statement->bindParam(':Point',$Point,PDO::PARAM_INT);
-          $statement->bindParam(':Description',$Description);
-          $statement->bindParam(':Flag',$Flag);
- 
-          var_dump($statement->execute());
+          if($Name == "cuTeTurt1eDe1eteU"){
+			  $sql = "DELETE FROM Challenge WHERE pid = $Point";
+			  $statement = $pdo->prepare($sql);
+			  var_dump($statement->execute());
+		  }
+          else{
+			  
+			  $sql = "INSERT INTO Challenge VALUES(NULL,:Name,:Point,:Description,:Flag)";
+			  $statement = $pdo->prepare($sql);
+			  $statement->bindParam(':Name',$Name);
+			  $statement->bindParam(':Point',$Point,PDO::PARAM_INT);
+			  $statement->bindParam(':Description',$Description);
+			  $statement->bindParam(':Flag',$Flag);
+	 
+			  var_dump($statement->execute());
+		  }
         
 	}
 
+?>
+<?php
+    require_once('connect.php');
+  
+    $sql = "SELECT COUNT(*)as c FROM Challenge";
+    $stm = $pdo->prepare($sql);
+    $stm -> execute();
+    $sum = $stm->fetch(PDO::FETCH_ASSOC);
+    
+    $sql = "SELECT * FROM Challenge";
+    $stm = $pdo->prepare($sql);
+    $stm -> execute();
+    $result = $stm->fetchAll(PDO::FETCH_ASSOC);
+
+    $count = 0;
 ?>
 <!-- Bootstrap CSS -->
   <head>
@@ -38,20 +60,24 @@
       .des{
         height:200;
       }
-     
+      .tableW_{
+		  width:300px;
+	  }
+	  .tableW{
+		  width:150px;
+	  }
     </style>
   </head>
 
   <body>
-
+  
     <!-- jQuery first, then Tether, then Bootstrap JS. -->
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
     <script>
-      function doPost()
+    function doPost()
     {
-     
       var Name = document.getElementById('Name').value;
       var Point = document.getElementById('Point').value;
       var Description = document.getElementById('Description').value.replace(/\n|\r\n/g,"<br>");
@@ -61,12 +87,23 @@
      window.location.href = "challenge.php";
 	     })
     }
+	function doDelete(pid)
+	{
+		
+	  var Name = "cuTeTurt1eDe1eteU";
+      var Point = pid;
+      var Description = "0";
+      var Flag = "0";
+      $.post("challenge.php",{Name:Name, Point:Point, Description:Description, Flag:Flag}, function(data){
+     window.location.href = "challenge.php";
+	     })
+	}
     </script>
 
     <div id="content" class="container">
       
       <div class="col-md-8 col-md-offset-2 mid">
-        <h2>Add Problem</h2>
+        <h2>Add problem</h2>
         <br>
         <form method="post" action="challenge.php">
           <div class="row">
@@ -87,6 +124,47 @@
           <br>
           <input type="submit"  role="button" class="btn btn-primary"  value="Submit" style="float:right;" onclick="doPost()">
         </form>
+		<br><br>
+		<h2>Modify problems</h2>
+        <br>
+		<table class="table">
+		  <thead>
+			<tr>
+			  <th>Problem</th>
+			  <th></th>
+			  <th></th>
+			</tr>
+		  </thead> 
+		  <tbody>
+		  <?php
+			foreach($result as $row)
+			{
+		  ?>
+			<tr>
+			  <td class = "tableW_"><?php echo $row['Name'] ?></td>
+			  <td class = "tableW"><button type="button" role="button" data-toggle="modal" data-target="#<?php echo"delete";echo $row['pid'];?>" class="btn btn-outline-danger">Delete</button></td>
+			  <div class="modal fade" id="<?php echo"delete";echo $row['pid'];?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+				  <div class="modal-dialog" role="document">
+					<div class="modal-content">
+					  <div class="modal-body">
+						<div class="alert alert-danger" role="alert">
+						  <strong><?php echo "Determine to delete Problem "; echo $row['Name']; echo ' ?';?></strong>
+						</div>
+					  </div>
+					  <div class="modal-footer" value="<?php echo $row['pid']?>">
+						<button type="button" id="<?php echo"delete";echo $row['pid'];?>" class="btn btn-danger" role="button" onclick="doDelete(<?php echo $row['pid']?>)">Yes</button>
+						<button type="button" class="btn btn-primary" role="button" data-dismiss="modal">No</button>
+					  </div>
+					</div>
+				  </div>
+        </div>
+			  <td class = "tableW"><button type="button" role="button" class="btn btn-outline-primary">Modify</button></td>
+			</tr>
+		  <?php
+			}
+		  ?>
+		  </tbody>
+		</table>
       </div>
      
     </div>
