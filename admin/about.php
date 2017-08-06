@@ -4,26 +4,22 @@
         require_once('config/database.php');
         
         $Modify = $_POST['Modify'];
-        $Type = $_POST['Type'];
         $Date = $_POST['Date'];
         $Announcement = $_POST['Announcement'];
         $Name = $_POST['Name'] ;
         if($Name == "HuanW0SiMen"){
-            $sql = "DELETE FROM About WHERE pid = $Announcement";
+            $sql = "DELETE FROM about WHERE pid = $Date";
             $statement = $pdo->prepare($sql);
         }
         else if($Modify == -1){
-            $sql = "INSERT INTO Anouncement VALUES(NULL, :Date,:Type,:Announcement)"
+            $sql = "INSERT INTO about VALUES(NULL, :Name ,:Date, :Announcement)"
             $statement = $pdo->prepare(%sql) ;
             $statement->bindParam(':Name', $Name) ;
-            $statement->bindParam(':Type', $Type) ;
             $statement->bindParam(':Date', $Date) ;
             $statement->bindParam(':Announcement', $Announcement) ;
         }else{
-            $sql = "UPDATE Announcement SET Date=:Date,Announcement=:Announcement, Type=:Type, WHERE pid=:Modify";
+            $sql = "UPDATE about SET Name=:Name , Date=:Date , Announcement=:Announcement, WHERE pid=:Modify";
             $statement = $pdo->prepare($sql);
-            
-            $statement->bindParam(':Type', $Type);
             $statement->bindParam(':Name', $Name);
             $statement->bindParam(':Date', $Date);
             $statement->bindParam(':Announcement', $Announcement);
@@ -36,16 +32,15 @@
 <?php
     require_once('config/database.php');
     
-    $sql = "SELECT COUNT(*)as c FROM Announcement";
+    $sql = "SELECT COUNT(*)as c FROM about";
     $stm = $pdo->prepare($sql);
     $stm -> execute();
     $sum = $stm->fetch(PDO::FETCH_ASSOC);
     
-    $sql = "SELECT * FROM Announcement";
+    $sql = "SELECT * FROM about";
     $stm = $pdo->prepare($sql);
     $stm -> execute();
     $result = $stm->fetchAll(PDO::FETCH_ASSOC);
-    $count = 0;
     ?>
 
 
@@ -89,17 +84,15 @@ function Post(modify){
     if( modify == -1){
         var Modify = modify ;
         var Name = document.getElementById('Name').value ;
-        var Type =  document.getElementByID('Type').value ;
         var Date = document.getElemenyByID('Date').value ;
         var Announcement = document.getElementByID('Announcement').value.replace(/\n|\r\n/g,"<br>") ;
     }else{
         var Modify = modify ;
         var Name = document.getElementById('m_Name' + modify).value ;
-        var Type = document.getElementByID('m_Type' + modify).value ;
         var Date = document.getElementByID('m_Date' + modify).value ;
-        var Announcement = document.getElementByID('m_announcement' + modify).value.replace(/\n|\r\n/g,"<br>") ;
+        var Announcement = document.getElementByID('m_Announcement' + modify).value.replace(/\n|\r\n/g,"<br>") ;
     }
-    $post("about.php",{Modify:Modify , Name:Name , Type:Type , Date:Date , Announcement:Announcement},
+    $.post("about.php",{Modify:Modify , Name:Name , Date:Date , Announcement:Announcement},
           function(data){
             setTimeout('window.location.href = "about.php"',100)
           })
@@ -108,17 +101,16 @@ function Post(modify){
 
 
 function Delete(pid){
-    var Name = "HuanW0SiMen" ;
+    var Name = "ctfctf" ;
     var Date = pid ;
-    var Type = "0" ;
     var Announcement = "0" ;
-    $post("about.php",{Name:Name , Date:Date , Type,Type , Anouncement:Announcement} ,
+    $post("about.php",{Name:Name , Date:Date  , Anouncement:Announcement} ,
           function(data){
             setTimeout('window.location.href = "about.php"',100)
           })
 }
 
-<script>
+</script>
 
 
 <div id = "content" class = "container">
@@ -131,10 +123,6 @@ function Delete(pid){
                     <label>Date</label>
                         <input id = "Date" class = "form-control" type = "text" required>
                 </div>
-                <div class = "col">
-                    <label>Type</label>
-                        <input id = "Type" class = "form-control" type = "text" required>
-                </div>
             <div>
 
             <label>Announcement</label>
@@ -146,10 +134,11 @@ function Delete(pid){
         <br><br>
 
         // do "Modify"
+    </div>
+</div>
 
 
-
-
+</body>
 
 
 
