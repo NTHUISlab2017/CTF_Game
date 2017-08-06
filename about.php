@@ -28,42 +28,76 @@
 <?php
     require_once('config/database.php');
     
-    $sql = "SELECT COUNT(*)as c FROM Announcement";
-    $stm = $pdo->prepare($sql);
-    $stm -> execute();
-    $sum = $stm->fetch(PDO::FETCH_ASSOC);
-    
-    $sql = "SELECT * FROM Announcement";
-    $stm = $pdo->prepare($sql);
-    $stm -> execute();
-    $result = $stm->fetchAll(PDO::FETCH_ASSOC);
+    $sql = "SELECT * FROM Announcement" ;
+    $result = mysql_query($query) ;
     
     ?>
 
-
-<?php
-    require_once('config/database.php');
-    
-    $sql = "SELECT COUNT(*)as c FROM Announcement";
-    $stm = $pdo->prepare($sql);
-    $stm -> execute();
-    $sum = $stm->fetch(PDO::FETCH_ASSOC);
-    
-    $sql = "SELECT * FROM Announcement";
-    $stm = $pdo->prepare($sql);
-    $stm -> execute();
-    $result = $stm->fetchAll(PDO::FETCH_ASSOC);
-    
-    ?>
 
 <h3>Announcement</h3>
-<hr>
+// ?
+<br>
 
 <!-- jQuery first, then Tether, then Bootstrap JS. -->
 <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
 
+
+<div class = "container containerr">
+
+<table border = "1">
+    <?php
+        while($row = mysqli_fetch_array($result)){
+            echo "<tr><td>" . $row['Date'] . "</td><td>" . $row['Type'] . "</td><td>" $row['Announcement'] . "</td></tr>" ;
+        }
+    
+    ?>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
 <table id='t' style="width: 100%" border = "1">
 <colgroup>
 <col style="width:60px">
@@ -85,3 +119,4 @@
 
 </table>
 <div id='disp'></div>
+*/
