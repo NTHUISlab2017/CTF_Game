@@ -1,7 +1,7 @@
 <?php
 	if ($_POST) {
           
-          require_once('config/database.php');
+          require_once('../config/database.php');
 		  
 		  $Modify = $_POST['Modify'];
           $Name = $_POST['Name'];
@@ -11,18 +11,18 @@
           
           if($Name == "cuTeTurt1eDe1eteU"){
 			  $sql = "DELETE FROM Challenge WHERE pid = $Point";
-			  $statement = $pdo->prepare($sql);
+			  $statement = $db->prepare($sql);
 		  }
           else if($Modify == -1){
 			  $sql = "INSERT INTO Challenge VALUES(NULL,:Name,:Point,:Description,:Flag)";
-		      $statement = $pdo->prepare($sql);
+		      $statement = $db->prepare($sql);
 			  $statement->bindParam(':Name', $Name);
 			  $statement->bindParam(':Point', $Point,PDO::PARAM_INT);
 			  $statement->bindParam(':Description', $Description);
 			  $statement->bindParam(':Flag', $Flag);
 		  }else{
 			  $sql = "UPDATE Challenge SET Name=:Name, Point=:Point, Description=:Description, Flag=:Flag WHERE pid=:Modify";
-			  $statement = $pdo->prepare($sql);
+			  $statement = $db->prepare($sql);
               $statement->bindParam(':Name', $Name);
               $statement->bindParam(':Point', $Point,PDO::PARAM_INT);
               $statement->bindParam(':Description', $Description);
@@ -36,15 +36,15 @@
 
 ?>
 <?php
-    require_once('config/database.php');
+    require_once('../config/database.php');
   
     $sql = "SELECT COUNT(*)as c FROM Challenge";
-    $stm = $pdo->prepare($sql);
+    $stm = $db->prepare($sql);
     $stm -> execute();
     $sum = $stm->fetch(PDO::FETCH_ASSOC);
     
     $sql = "SELECT * FROM Challenge";
-    $stm = $pdo->prepare($sql);
+    $stm = $db->prepare($sql);
     $stm -> execute();
     $result = $stm->fetchAll(PDO::FETCH_ASSOC);
 
@@ -78,10 +78,6 @@
 
   <body>
   
-    <!-- jQuery first, then Tether, then Bootstrap JS. -->
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
     <script>
     function doPost(modify)
     {
