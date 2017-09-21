@@ -1,5 +1,5 @@
 var container = document.getElementById('webterm'),
-socket = io('http://192.168.30.129:3000/pty'), term, stream;
+socket = io('http://127.0.0.1:3000/pty'), term, stream;
 
 // used to measure how large the webterm's col/row should be.
 container.innerHTML = "<div>Connecting to server ... </div><div id='sample' style='position:absolute;'>&nbsp;</div>";

@@ -4,6 +4,6 @@
 # Note:
 #     1. Requires "sudo" since docker execution needs sudo.
 
-sudo node ./node-webterm/app.js
+sudo nodejs ./node-webterm/app.js
 
 

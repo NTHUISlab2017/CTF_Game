@@ -1,7 +1,7 @@
 <?php
     if ($_POST) {
         
-        require_once('config/database.php');
+        require_once('../config/database.php');
         
         $Modify = $_POST['Modify'];
         $Date = $_POST['Date'];
@@ -30,7 +30,7 @@
     }
     ?>
 <?php
-    require_once('config/database.php');
+    require_once('../config/database.php');
     
     $sql = "SELECT COUNT(*)as c FROM about";
     $stm = $pdo->prepare($sql);

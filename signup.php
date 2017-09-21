@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 
 
     /* Insert to DB */
-    $cmd = "INSERT INTO Userinfo VALUES(NULL, :account, :password, :email, :comment, '')";
+    $cmd = "INSERT INTO Userinfo VALUES(NULL, :account, :password, :email, :comment, '','')";
     $stm = $db->prepare($cmd);
     $stm->bindParam(':account', $account);
     $stm->bindParam(':password', $password);
@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 
     /* Redirect */
     header('HTTP/1.1 302 Redirect'); 
-    header('Location: index.html');
+    header('Location: index.php');
   }
   catch(Exception $e)
   {

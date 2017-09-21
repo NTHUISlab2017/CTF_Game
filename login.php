@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
     $_SESSION['uid']=$result['uid'];
     setcookie('uid',$result['uid']);
     header('HTTP/1.1 302 Redirect');
-    header('Location: index.html');
+    header('Location: index.php');
   }
   catch(Exception $e)
   {
