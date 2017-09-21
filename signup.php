@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 
 
     /* Insert to DB */
-    $cmd = "INSERT INTO Userinfo VALUES(NULL, :account, :password, :email, :comment, '')";
+    $cmd = "INSERT INTO Userinfo VALUES(NULL, :account, :password, :email, :comment, '','')";
     $stm = $db->prepare($cmd);
     $stm->bindParam(':account', $account);
     $stm->bindParam(':password', $password);
@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 
     /* Redirect */
     header('HTTP/1.1 302 Redirect'); 
-    header('Location: index.html');
+    header('Location: index.php');
   }
   catch(Exception $e)
   {
@@ -85,20 +85,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
               <h4>Register</h4>
               <br>
               <form method="post" action="signup.php">
-                	<label >ID</label>
-                	<input class="form-control" name="account" id="account" onkeyup="checkRegAcc()" required>
-                	<span id="msg_user_name"></span>
-                	<br>
-                	<label>Password</label>
-                	<input class="form-control" type="password" name="password" id="password" required>
-                	<label>Confirm Password</label>
-                	<input class="form-control" type="password" name="password2" id="password2" required>
-                	<label>Email</label>
+                  <label >ID</label>
+                  <input class="form-control" name="account" id="account" onkeyup="checkRegAcc()" required>
+                  <span id="msg_user_name"></span>
+                  <br>
+                  <label>Password</label>
+                  <input class="form-control" type="password" name="password" id="password" required>
+                  <label>Confirm Password</label>
+                  <input class="form-control" type="password" name="password2" id="password2" required>
+                  <label>Email</label>
                   <input class="form-control" type="text" name="email" required>
                   <label>Comment</label>
-                	<input class="form-control" type="text" name="comment" required>
-                	<br>
-                	<input type="submit"  class="btn btn-primary"  id="submit" value="送出" style="float:right;">
+                  <input class="form-control" type="text" name="comment" required>
+                  <br>
+                  <input type="submit"  class="btn btn-primary"  id="submit" value="送出" style="float:right;">
                 </form>
             </div>
         </div>
