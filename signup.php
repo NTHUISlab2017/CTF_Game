@@ -25,12 +25,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
     $result = $stm->fetch(PDO::FETCH_ASSOC);
     if($result) throw new Exception("Account Already Exist!");
 
+    /* Create password hash */
+    $passwordHash = password_hash( $password, PASSWORD_DEFAULT, ['cost' => 12] );
+    if ($passwordHash === false)  throw new Exception('Password hash failed');
 
     /* Insert to DB */
-    $cmd = "INSERT INTO Userinfo VALUES(NULL, :account, :password, :email, :comment, '','')";
+    $cmd = "INSERT INTO Userinfo VALUES(NULL, :account, :password, :comment, 0, :email, '')";
     $stm = $db->prepare($cmd);
     $stm->bindParam(':account', $account);
-    $stm->bindParam(':password', $password);
+    $stm->bindParam(':password', $passwordHash);
     $stm->bindParam(':email', $email);
     $stm->bindParam(':comment', $comment);
     $stm->execute();

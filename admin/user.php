@@ -1,5 +1,5 @@
 <?php
-require_once('config/database.php');
+require_once('../config/database.php');
 if ($_SERVER['REQUEST_METHOD'] == 'POST')
 {
 	try
@@ -54,8 +54,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 			        <th>uid</th>
 			        <th>ID</th>
 			        <th>Password</th>
-			        <th>Email</th>
 			        <th>Comment</th>
+			        <th>Point</th>
+			        <th>Email</th>
 			        <th>LastIP</th>
 			        <th><input type="submit" class="btn btn-danger" value="Delete"></th>
 			      </tr>

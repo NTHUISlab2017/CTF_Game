@@ -12,14 +12,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
     if(!$password) throw new Exception("Invalid Password!");
 
     /* Fetch from DB */
-    $cmd = "SELECT * FROM Userinfo WHERE :account=ID AND :password=Password";
+    $cmd = "SELECT * FROM Userinfo WHERE :account=ID";
     $stm = $db->prepare($cmd);
     $stm->bindParam(':account', $account);
-    $stm->bindParam(':password', $password);
     $stm->execute();
-
     $result = $stm->fetch(PDO::FETCH_ASSOC);
-    if(!$result)  throw new Exception("Wrong Account or Password!");
+    if(!$result)  throw new Exception("Wrong Account!");
+
+    /* Check Password */
+    if(password_verify($password, $result['Password']) == false)
+      throw new Exception("Wrong Password!");
+
+
 
     /* Record IP */
     $ip = "";
