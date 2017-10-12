@@ -24,7 +24,7 @@
 <body>
 
   <?php
-    require_once('connect.php');
+    require_once('config/database.php');
   
     $sql = "SELECT COUNT(*)as c FROM Challenge";
     $stm = $db->prepare($sql);
