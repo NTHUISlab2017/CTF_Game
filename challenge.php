@@ -1,9 +1,3 @@
-<?php
-ini_set('display_errors', 1); //顯示錯誤訊息
-ini_set('log_errors', 1); //錯誤log 檔開啟
-ini_set('error_log', dirname(__FILE__) . '/error_log.txt'); //log檔位置
-error_reporting(E_ALL); //錯誤回報
-?>
 <head>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
   <style type="text/css">
@@ -28,26 +22,27 @@ error_reporting(E_ALL); //錯誤回報
 </head>
 
 <body>
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
   
   <?php
-    require_once('config/database.php');
+    require_once('connect.php');
   
     $sql = "SELECT COUNT(*)as c FROM Challenge";
     $stm = $db->prepare($sql);
     $stm -> execute();
-    $sum = $stm->fetch(pdo::FETCH_ASSOC);
+    $sum = $stm->fetch(PDO::FETCH_ASSOC);
     
     $sql = "SELECT * FROM Challenge";
     $stm = $db->prepare($sql);
     $stm -> execute();
-    $result = $stm->fetchAll(pdo::FETCH_ASSOC);
+    $result = $stm->fetchAll(PDO::FETCH_ASSOC);
 
     $count = 0;
   ?>
   
+
   <h3>CHALLENGES</h3>
     <hr>
-  
   <div class="container containerr">
   
 	<?php
@@ -81,6 +76,7 @@ error_reporting(E_ALL); //錯誤回報
                 <?php echo $row['Description']?>
               </div>
               <div class="modal-footer">
+			    <input id="Flag" class="form-control" type="text"  required>
                 <button type="button" class="btn btn-primary"><?php echo "Submit the FLAG"?></button>
 			  </div>
             </div>
