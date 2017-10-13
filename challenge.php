@@ -42,6 +42,30 @@
 
   <h3>CHALLENGES</h3>
     <hr>
+
+   <script>
+	function messageGo(pid){
+
+	  var problemid = pid;     
+	  var flag = document.getElementById('flag' + pid).value;                                                 
+
+		$.ajax({
+			url:"flag.php",                                                              
+			data: {"problemid":problemid,"flag":flag},   
+			type : "POST",                                                                    
+			dataType:'text', 
+			error:function(){                                                                 
+             alert("error");
+            },
+			success:function(c){                                                      
+			 alert(c);
+			}
+		}); 
+
+	}
+	</script>
+ 
+ 
   <div class="container containerr">
   
 	<?php
@@ -62,6 +86,7 @@
         </button>
 
         <!-- Modal -->
+		<form id="message_form" method="POST"> 
         <div class="modal fade" id="<?php echo"prob1em";echo $row['pid'];?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
           <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -75,12 +100,13 @@
                 <?php echo $row['Description']?>
               </div>
               <div class="modal-footer">
-			    <input id="Flag" class="form-control" type="text"  required>
-                <button type="button" class="btn btn-primary"><?php echo "Submit the FLAG"?></button>
+			    <input id="<?php echo 'flag'. $row['pid'];?>" class="form-control" type="text"  required>
+                <button type="button" class="btn btn-primary" onclick="messageGo(<?php echo $row['pid'];?>)"><?php echo "Submit the FLAG"?></button>
 			  </div>
             </div>
           </div>
         </div>
+		</form>
       </div>
 	  <?php
 		if($count+1 == $sum["c"] && $count%4 != 3){
