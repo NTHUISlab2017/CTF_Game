@@ -1,6 +1,33 @@
 <?php
 	if ($_POST) {
           
+		  $fileCount = count($_FILES['file']['tmp_name']);
+           
+		  for ($i = 0; $i < $fileCount; $i++) {
+		    # Error?
+		    if ($_FILES['file']['error'][$i] === UPLOAD_ERR_OK){
+			  /*echo '檔案名稱: ' . $_FILES['file']['name'][$i] . '<br/>';
+			  echo '檔案類型: ' . $_FILES['file']['type'][$i] . '<br/>';
+			  echo '檔案大小: ' . ($_FILES['file']['size'][$i] / 1024) . ' KB<br/>';
+			  echo '暫存名稱: ' . $_FILES['file']['tmp_name'][$i] . '<br/>';*/
+
+			  # File existed?
+			  if (file_exists('file/' . $_FILES['file']['name'][$i])){
+		  	    echo 'This file has existed!。<br/>';
+			  } 
+			  else {
+			    $file = $_FILES['file']['tmp_name'][$i];
+			    $dest = 'file/' . $_FILES['file']['name'][$i];
+				
+			    move_uploaded_file($file,$dest);
+			  }
+		    } 
+			else {
+			  echo 'Error：' . $_FILES['file']['error'][$i] . '<br/>';
+		    }
+		  }
+		  
+		 
           require_once('../config/database.php');
 		  
 		  $Modify = $_POST['Modify'];
@@ -19,7 +46,7 @@
 			  $statement->bindParam(':Name', $Name);
 			  $statement->bindParam(':Point', $Point,PDO::PARAM_INT);
 			  $statement->bindParam(':Description', $Description);
-			  $statement->bindParam(':Flag', $Flag);
+			  $statement->bindParam(':Flag', $Flag);  
 		  }else{
 			  $sql = "UPDATE Challenge SET Name=:Name, Point=:Point, Description=:Description, Flag=:Flag WHERE pid=:Modify";
 			  $statement = $db->prepare($sql);
@@ -28,7 +55,6 @@
               $statement->bindParam(':Description', $Description);
               $statement->bindParam(':Flag', $Flag);
               $statement->bindParam(':Modify', $Modify);
-
 		  }
 		  var_dump($statement->execute());
         
@@ -50,7 +76,8 @@
 
     $count = 0;
 ?>
-<!-- Bootstrap CSS -->
+
+
   <head>
     <title>AddProblem</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
@@ -75,12 +102,13 @@
 	  }
     </style>
   </head>
-
+<html>
   <body>
   
-    <script>
+   <script>
     function doPost(modify)
     {
+
 	  if(modify == -1){
 	    var Modify = modify;
 		var Name = document.getElementById('Name').value;
@@ -94,7 +122,8 @@
 		var Point = document.getElementById('m_Point' + modify).value;
 		var Description = document.getElementById('m_Description' + modify).value.replace(/\n|\r\n/g, "<br>");
 		var Flag = document.getElementById('m_Flag' + modify).value;
-	  }	  
+	  }
+	  
       $.post("challenge.php",{Modify:Modify, Name:Name, Point:Point, Description:Description, Flag:Flag}, function(data){
         setTimeout('window.location.href = "challenge.php"',100)
      
@@ -113,12 +142,13 @@
 	}
     </script>
 
+
     <div id="content" class="container">
       
       <div class="col-md-8 col-md-offset-2 mid">
         <h2>Add problem</h2>
         <br>
-        <form method="post" action="challenge.php">
+        <form method="post" action="challenge.php" enctype="multipart/form-data">
           <div class="row">
             <div class="col">
             <label >Name</label>
@@ -134,10 +164,19 @@
             <textarea id="Description" class="form-control des" type="text"  required></textarea>
           <label>Flag</label>
             <input id="Flag" class="form-control" type="text"  required>
+		  <label>File input</label>
+		  <br>
+            <input type="file" id="file" name="file[]" multiple> 
           <br>
-          <input type="button"  role="button" class="btn btn-primary"  value="Submit" style="float:right;" onclick="doPost(-1)">
+		  <br>
+		  <input type="reset" class="btn btn-primary" value="reset">
+          <input type="submit" name="submit" value="Submit" class="btn btn-primary" style="float:right;" onclick="doPost(-1)" />
         </form>
-		<br><br>
+		<br>
+		<br>
+		<br>
+		<br>
+
 		<h2>Modify problems</h2>
         <br>
 		<table class="table">
