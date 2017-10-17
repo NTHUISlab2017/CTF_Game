@@ -2,28 +2,28 @@
 	if ($_POST) {
           
 		  $fileCount = count($_FILES['file']['tmp_name']);
-           
+          
 		  for ($i = 0; $i < $fileCount; $i++) {
 		    # Error?
 		    if ($_FILES['file']['error'][$i] === UPLOAD_ERR_OK){
-			  /*echo '檔案名稱: ' . $_FILES['file']['name'][$i] . '<br/>';
-			  echo '檔案類型: ' . $_FILES['file']['type'][$i] . '<br/>';
-			  echo '檔案大小: ' . ($_FILES['file']['size'][$i] / 1024) . ' KB<br/>';
-			  echo '暫存名稱: ' . $_FILES['file']['tmp_name'][$i] . '<br/>';*/
+				
+			  $folder_name = (string)$_POST['lastpid'];
+		      mkdir($folder_name);
 
 			  # File existed?
-			  if (file_exists('file/' . $_FILES['file']['name'][$i])){
+			  if (file_exists($folder_name.'/' . $_FILES['file']['name'][$i])){
 		  	    echo 'This file has existed!。<br/>';
 			  } 
 			  else {
+				 
 			    $file = $_FILES['file']['tmp_name'][$i];
-			    $dest = 'file/' . $_FILES['file']['name'][$i];
+			    $dest = $folder_name.'/' . $_FILES['file']['name'][$i];
 				
 			    move_uploaded_file($file,$dest);
 			  }
 		    } 
 			else {
-			  echo 'Error：' . $_FILES['file']['error'][$i] . '<br/>';
+			  //echo 'Error：' . $_FILES['file']['error'][$i] . '<br/>';
 		    }
 		  }
 		  
@@ -41,12 +41,15 @@
 			  $statement = $db->prepare($sql);
 		  }
           else if($Modify == -1){
+			  
 			  $sql = "INSERT INTO Challenge VALUES(NULL,:Name,:Point,:Description,:Flag)";
 		      $statement = $db->prepare($sql);
 			  $statement->bindParam(':Name', $Name);
 			  $statement->bindParam(':Point', $Point,PDO::PARAM_INT);
 			  $statement->bindParam(':Description', $Description);
-			  $statement->bindParam(':Flag', $Flag);  
+			  $statement->bindParam(':Flag', $Flag);
+			 
+			  
 		  }else{
 			  $sql = "UPDATE Challenge SET Name=:Name, Point=:Point, Description=:Description, Flag=:Flag WHERE pid=:Modify";
 			  $statement = $db->prepare($sql);
@@ -55,6 +58,7 @@
               $statement->bindParam(':Description', $Description);
               $statement->bindParam(':Flag', $Flag);
               $statement->bindParam(':Modify', $Modify);
+
 		  }
 		  var_dump($statement->execute());
         
@@ -73,6 +77,12 @@
     $stm = $db->prepare($sql);
     $stm -> execute();
     $result = $stm->fetchAll(PDO::FETCH_ASSOC);
+	
+	$sql = "SELECT * FROM Challenge ORDER BY pid DESC LIMIT 1";
+    $stm = $db->prepare($sql);
+    $stm -> execute();
+    $last_ = $stm->fetch(PDO::FETCH_ASSOC);
+	$last = $last_['pid']+1;
 
     $count = 0;
 ?>
@@ -105,7 +115,7 @@
 <html>
   <body>
   
-   <script>
+    <script>
     function doPost(modify)
     {
 
@@ -166,6 +176,7 @@
             <input id="Flag" class="form-control" type="text"  required>
 		  <label>File input</label>
 		  <br>
+		    <input type="hidden" name="lastpid" value="<?php echo $last;?>">
             <input type="file" id="file" name="file[]" multiple> 
           <br>
 		  <br>
