@@ -1,3 +1,20 @@
+
+<?php
+    require_once('config/database.php');
+  
+    $sql = "SELECT COUNT(*)as c FROM Challenge";
+    $stm = $db->prepare($sql);
+    $stm -> execute();
+    $sum = $stm->fetch(PDO::FETCH_ASSOC);
+    
+    $sql = "SELECT * FROM Challenge";
+    $stm = $db->prepare($sql);
+    $stm -> execute();
+    $result = $stm->fetchAll(PDO::FETCH_ASSOC);
+
+    $count = 0;
+?>
+<html>
 <head>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
   <style type="text/css">
@@ -17,32 +34,15 @@
 	  min-height:150;
 	  word-wrap:break-word;
 	}
-    
+    .btsize{
+		width:100;
+	}
   </style> 
 </head>
-
+  
 <body>
-
-  <?php
-    require_once('config/database.php');
-  
-    $sql = "SELECT COUNT(*)as c FROM Challenge";
-    $stm = $db->prepare($sql);
-    $stm -> execute();
-    $sum = $stm->fetch(PDO::FETCH_ASSOC);
-    
-    $sql = "SELECT * FROM Challenge";
-    $stm = $db->prepare($sql);
-    $stm -> execute();
-    $result = $stm->fetchAll(PDO::FETCH_ASSOC);
-
-    $count = 0;
-  ?>
-  
-
   <h3>CHALLENGES</h3>
     <hr>
-
    <script>
 	function messageGo(pid){
 
@@ -63,6 +63,7 @@
 		}); 
 
 	}
+	
 	</script>
  
  
@@ -85,8 +86,7 @@
           <span class="score"><i><?php echo $row['Point']?>pts</i></span><br>
         </button>
 
-        <!-- Modal -->
-		<form id="message_form" method="POST"> 
+
         <div class="modal fade" id="<?php echo"prob1em";echo $row['pid'];?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
           <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -99,14 +99,27 @@
               <div class="modal-body problemDes">
                 <?php echo $row['Description']?>
               </div>
+			  <form action="download.php" id="filedownload" method="POST">
+				<input type="hidden" name="probid" value="<?php echo $row['pid'];?>">
+				<?php 
+				   $dir='./admin/'.(string)$row['pid'];
+				   if(is_dir($dir)){
+				?>
+			    <input type="submit" name="filedownload" value="filedownload" class="btn btn-primary btn-sm btsize">
+				<?php
+				   }
+				?>
+			  </form>
+			  <form id="message_form" method="POST">
               <div class="modal-footer">
 			    <input id="<?php echo 'flag'. $row['pid'];?>" class="form-control" type="text"  required>
                 <button type="button" class="btn btn-primary" onclick="messageGo(<?php echo $row['pid'];?>)"><?php echo "Submit the FLAG"?></button>
 			  </div>
+			  </form>
             </div>
           </div>
         </div>
-		</form>
+		
       </div>
 	  <?php
 		if($count+1 == $sum["c"] && $count%4 != 3){
@@ -140,3 +153,4 @@
   
   
 </body>
+</html>
