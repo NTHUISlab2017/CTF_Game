@@ -1,5 +1,5 @@
-
 <?php
+ 
     require_once('config/database.php');
   
     $sql = "SELECT COUNT(*)as c FROM Challenge";
@@ -16,6 +16,7 @@
 ?>
 <html>
 <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
   <style type="text/css">
     .problems {
@@ -61,7 +62,6 @@
 			 alert(c);
 			}
 		}); 
-
 	}
 	
 	</script>
@@ -86,7 +86,6 @@
           <span class="score"><i><?php echo $row['Point']?>pts</i></span><br>
         </button>
 
-
         <div class="modal fade" id="<?php echo"prob1em";echo $row['pid'];?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
           <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -99,21 +98,24 @@
               <div class="modal-body problemDes">
                 <?php echo $row['Description']?>
               </div>
-			  <form action="download.php" id="filedownload" method="POST">
-				<input type="hidden" name="probid" value="<?php echo $row['pid'];?>">
+			  <form id="filedownload">
 				<?php 
 				   $dir='./admin/'.(string)$row['pid'];
 				   if(is_dir($dir)){
+					   $file = scandir($dir);
+					   for($i=2;$i<sizeof($file);$i++){
+						   $n=$i-1;
 				?>
-			    <input type="submit" name="filedownload" value="filedownload" class="btn btn-primary btn-sm btsize">
+				<a href="filedownload.php?file_name=<?php echo $file[$i];?>&probid=<?php echo $row['pid'];?>"><?php echo $file[$i];?></a>
 				<?php
+					   }
 				   }
 				?>
 			  </form>
 			  <form id="message_form" method="POST">
               <div class="modal-footer">
 			    <input id="<?php echo 'flag'. $row['pid'];?>" class="form-control" type="text"  required>
-                <button type="button" class="btn btn-primary" onclick="messageGo(<?php echo $row['pid'];?>)"><?php echo "Submit the FLAG"?></button>
+                <button type="button" role="button" class="btn btn-primary" onclick="messageGo(<?php echo $row['pid'];?>)"><?php echo "Submit the FLAG"?></button>
 			  </div>
 			  </form>
             </div>

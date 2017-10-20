@@ -1,4 +1,5 @@
 <?php
+	require_once('../utils/check_admin.php');
 	if ($_POST) {
           
 		  $fileCount = count($_FILES['file']['tmp_name']);
