@@ -1,33 +1,32 @@
 <?php
 	require_once('../utils/check_admin.php');
 	if ($_POST) {
-          
-		  $fileCount = count($_FILES['file']['tmp_name']);
-          
-		  for ($i = 0; $i < $fileCount; $i++) {
-		    # Error?
-		    if ($_FILES['file']['error'][$i] === UPLOAD_ERR_OK){
-				
-			  $folder_name = (string)$_POST['lastpid'];
-		      mkdir($folder_name);
-
-			  # File existed?
-			  if (file_exists($folder_name.'/' . $_FILES['file']['name'][$i])){
-		  	    echo 'This file has existed!。<br/>';
-			  } 
-			  else {
-				 
-			    $file = $_FILES['file']['tmp_name'][$i];
-			    $dest = $folder_name.'/' . $_FILES['file']['name'][$i];
-				
-			    move_uploaded_file($file,$dest);
+          if($_POST['file'] === "upload"){
+			  $fileCount = count($_FILES['file']['tmp_name']);
+			  
+			  for ($i = 0; $i < $fileCount; $i++) {
+				# Error?
+				if ($_FILES['file']['error'][$i] === UPLOAD_ERR_OK){
+					
+				  $folder_name = (string)$_POST['lastpid'];
+				  mkdir($folder_name);
+				  # File existed?
+				  if (file_exists($folder_name.'/' . $_FILES['file']['name'][$i])){
+					echo 'This file has existed!。<br/>';
+				  } 
+				  else {
+					 
+					$file = $_FILES['file']['tmp_name'][$i];
+					$dest = $folder_name.'/' . $_FILES['file']['name'][$i];
+					
+					move_uploaded_file($file,$dest);
+				  }
+				} 
+				else {
+				  echo 'Error：' . $_FILES['file']['error'][$i] . '<br/>';
+				}
 			  }
-		    } 
-			else {
-			  //echo 'Error：' . $_FILES['file']['error'][$i] . '<br/>';
-		    }
 		  }
-		  
 		 
           require_once('../config/database.php');
 		  
@@ -59,12 +58,10 @@
               $statement->bindParam(':Description', $Description);
               $statement->bindParam(':Flag', $Flag);
               $statement->bindParam(':Modify', $Modify);
-
 		  }
 		  var_dump($statement->execute());
         
 	}
-
 ?>
 <?php
     require_once('../config/database.php');
@@ -84,7 +81,6 @@
     $stm -> execute();
     $last_ = $stm->fetch(PDO::FETCH_ASSOC);
 	$last = $last_['pid']+1;
-
     $count = 0;
 ?>
 
@@ -115,11 +111,13 @@
   </head>
 <html>
   <body>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
   
     <script>
     function doPost(modify)
     {
-
 	  if(modify == -1){
 	    var Modify = modify;
 		var Name = document.getElementById('Name').value;
@@ -135,8 +133,8 @@
 		var Flag = document.getElementById('m_Flag' + modify).value;
 	  }
 	  
-      $.post("challenge.php",{Modify:Modify, Name:Name, Point:Point, Description:Description, Flag:Flag}, function(data){
-        setTimeout('window.location.href = "challenge.php"',100)
+      $.post("admin/challenge.php",{Modify:Modify, Name:Name, Point:Point, Description:Description, Flag:Flag}, function(data){
+        setTimeout('window.location.href = "admin/challenge.php"',100)
      
 	     })
     }
@@ -147,8 +145,8 @@
       var Point = pid;
       var Description = "0";
       var Flag = "0";
-      $.post("challenge.php",{Name:Name, Point:Point, Description:Description, Flag:Flag}, function(data){
-        setTimeout('window.location.href = "challenge.php"',100)
+      $.post("admin/challenge.php",{Name:Name, Point:Point, Description:Description, Flag:Flag}, function(data){
+        setTimeout('window.location.href = "admin/challenge.php"',100)
 	     })
 	}
     </script>
@@ -159,7 +157,7 @@
       <div class="col-md-8 col-md-offset-2 mid">
         <h2>Add problem</h2>
         <br>
-        <form method="post" action="challenge.php" enctype="multipart/form-data">
+        <form method="post" action="admin/challenge.php" enctype="multipart/form-data">
           <div class="row">
             <div class="col">
             <label >Name</label>
@@ -177,6 +175,7 @@
             <input id="Flag" class="form-control" type="text"  required>
 		  <label>File input</label>
 		  <br>
+		    <input type="hidden" name="file" value="upload">
 		    <input type="hidden" name="lastpid" value="<?php echo $last;?>">
             <input type="file" id="file" name="file[]" multiple> 
           <br>
