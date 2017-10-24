@@ -1,7 +1,10 @@
 <?php
 	require_once('../utils/check_admin.php');
+	
 	if ($_POST) {
+		
           if($_POST['file'] === "upload"){
+			  
 			  $fileCount = count($_FILES['file']['tmp_name']);
 			  
 			  for ($i = 0; $i < $fileCount; $i++) {
@@ -10,8 +13,10 @@
 					
 				  $folder_name = (string)$_POST['lastpid'];
 				  mkdir($folder_name);
+				  chmod($folder_name, 0777);
 				  # File existed?
 				  if (file_exists($folder_name.'/' . $_FILES['file']['name'][$i])){
+					echo $folder_name;
 					echo 'This file has existed!。<br/>';
 				  } 
 				  else {
@@ -20,6 +25,7 @@
 					$dest = $folder_name.'/' . $_FILES['file']['name'][$i];
 					
 					move_uploaded_file($file,$dest);
+					
 				  }
 				} 
 				else {
@@ -27,6 +33,9 @@
 				}
 			  }
 		  }
+		  
+		  
+		 
 		 
           require_once('../config/database.php');
 		  
@@ -37,8 +46,12 @@
           $Flag = $_POST['Flag'];
           
           if($Name == "cuTeTurt1eDe1eteU"){
+
 			  $sql = "DELETE FROM Challenge WHERE pid = $Point";
 			  $statement = $db->prepare($sql);
+			  var_dump($statement->execute());
+			  
+			 
 		  }
           else if($Modify == -1){
 			  
@@ -48,6 +61,7 @@
 			  $statement->bindParam(':Point', $Point,PDO::PARAM_INT);
 			  $statement->bindParam(':Description', $Description);
 			  $statement->bindParam(':Flag', $Flag);
+			  var_dump($statement->execute());
 			 
 			  
 		  }else{
@@ -58,30 +72,26 @@
               $statement->bindParam(':Description', $Description);
               $statement->bindParam(':Flag', $Flag);
               $statement->bindParam(':Modify', $Modify);
+			  var_dump($statement->execute());
 		  }
-		  var_dump($statement->execute());
+		  
         
 	}
 ?>
 <?php
     require_once('../config/database.php');
-  
-    $sql = "SELECT COUNT(*)as c FROM Challenge";
-    $stm = $db->prepare($sql);
-    $stm -> execute();
-    $sum = $stm->fetch(PDO::FETCH_ASSOC);
     
     $sql = "SELECT * FROM Challenge";
     $stm = $db->prepare($sql);
     $stm -> execute();
     $result = $stm->fetchAll(PDO::FETCH_ASSOC);
-	
-	$sql = "SELECT * FROM Challenge ORDER BY pid DESC LIMIT 1";
-    $stm = $db->prepare($sql);
+
+
+	$sql = "SELECT `AUTO_INCREMENT` FROM INFORMATION_SCHEMA.TABLES WHERE table_name = 'Challenge'";
+	$stm = $db->prepare($sql);
     $stm -> execute();
-    $last_ = $stm->fetch(PDO::FETCH_ASSOC);
-	$last = $last_['pid']+1;
-    $count = 0;
+    $next = $stm->fetch(PDO::FETCH_ASSOC);
+	$last = $next['AUTO_INCREMENT'];
 ?>
 
 
@@ -124,6 +134,7 @@
 		var Point = document.getElementById('Point').value;
 		var Description = document.getElementById('Description').value.replace(/\n|\r\n/g,"<br>");
 		var Flag = document.getElementById('Flag').value;		
+		
 	  }
 	  else{
 	    var Modify = modify;
@@ -131,21 +142,22 @@
 		var Point = document.getElementById('m_Point' + modify).value;
 		var Description = document.getElementById('m_Description' + modify).value.replace(/\n|\r\n/g, "<br>");
 		var Flag = document.getElementById('m_Flag' + modify).value;
+		
 	  }
-	  
-      $.post("admin/challenge.php",{Modify:Modify, Name:Name, Point:Point, Description:Description, Flag:Flag}, function(data){
+	  $.post("admin/challenge.php",{Modify:Modify, Name:Name, Point:Point, Description:Description, Flag:Flag}, function(data){
         setTimeout('window.location.href = "admin/challenge.php"',100)
      
 	     })
+ 
     }
 	function doDelete(pid)
 	{
-		
+	  var Modify = 0;
 	  var Name = "cuTeTurt1eDe1eteU";
       var Point = pid;
       var Description = "0";
       var Flag = "0";
-      $.post("admin/challenge.php",{Name:Name, Point:Point, Description:Description, Flag:Flag}, function(data){
+      $.post("admin/challenge.php",{Modify:Modify, Name:Name, Point:Point, Description:Description, Flag:Flag}, function(data){
         setTimeout('window.location.href = "admin/challenge.php"',100)
 	     })
 	}
@@ -157,7 +169,7 @@
       <div class="col-md-8 col-md-offset-2 mid">
         <h2>Add problem</h2>
         <br>
-        <form method="post" action="admin/challenge.php" enctype="multipart/form-data">
+        <form id="fileup" method="post" action="admin/challenge.php" enctype="multipart/form-data">
           <div class="row">
             <div class="col">
             <label >Name</label>
@@ -181,7 +193,7 @@
           <br>
 		  <br>
 		  <input type="reset" class="btn btn-primary" value="reset">
-          <input type="submit" name="submit" value="Submit" class="btn btn-primary" style="float:right;" onclick="doPost(-1)" />
+          <input type="submit" name="submit" value="Submit" class="btn btn-primary" style="float:right;" onclick="doPost(-1)" >
         </form>
 		<br>
 		<br>
@@ -206,6 +218,7 @@
 			<tr>
 			  <td class = "tableW_"><?php echo $row['Name'] ?></td>
 			  <td class = "tableW"><button type="button" role="button" data-toggle="modal" data-target="#<?php echo"delete". $row['pid'];?>" class="btn btn-outline-danger">Delete</button></td>
+			  
 			  <div class="modal fade" id="<?php echo"delete". $row['pid'];?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
 				  <div class="modal-dialog" role="document">
 					<div class="modal-content">
@@ -215,18 +228,23 @@
 						</div>
 					  </div>
 					  <div class="modal-footer">
-						<button type="button" id="<?php echo"delete". $row['pid'];?>" class="btn btn-danger" role="button" onclick="doDelete(<?php echo $row['pid']?>)">Yes</button>
+					  
+					    <input type="hidden" name="folderpid" value="<?php echo $row['pid'] ?>">
+					    <input type="hidden" name="filedelete" value="<?php echo "delete";?>">
+						<input type="submit" id="<?php echo"delete". $row['pid'];?>" class="btn btn-danger"onclick="doDelete(<?php echo $row['pid']?>)" value="Yes">
+					  
 						<button type="button" class="btn btn-primary" role="button" data-dismiss="modal">No</button>
 					  </div>
 					</div>
 				  </div>
 			  </div>
+			  
 			  <td class = "tableW"><button type="button" role="button" data-toggle="modal" data-target="#<?php echo"modify". $row['pid'];?>" class="btn btn-outline-primary">Modify</button></td>
 			  <div class="modal fade" id="<?php echo"modify". $row['pid'];?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
 				  <div class="modal-dialog" role="document">
 					<div class="modal-content">
 					  <div class="modal-body">
-					    <form method="post" action="challenge.php">
+					    <form method="post" action="admin/challenge.php">
 						  <div class="row">
 							<div class="col">
 							<label>Name</label>
