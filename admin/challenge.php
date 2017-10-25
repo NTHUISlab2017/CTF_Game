@@ -2,41 +2,7 @@
 	require_once('../utils/check_admin.php');
 	
 	if ($_POST) {
-		
-          if($_POST['file'] === "upload"){
-			  
-			  $fileCount = count($_FILES['file']['tmp_name']);
-			  
-			  for ($i = 0; $i < $fileCount; $i++) {
-				# Error?
-				if ($_FILES['file']['error'][$i] === UPLOAD_ERR_OK){
-					
-				  $folder_name = (string)$_POST['lastpid'];
-				  mkdir($folder_name);
-				  chmod($folder_name, 0777);
-				  # File existed?
-				  if (file_exists($folder_name.'/' . $_FILES['file']['name'][$i])){
-					echo $folder_name;
-					echo 'This file has existed!。<br/>';
-				  } 
-				  else {
-					 
-					$file = $_FILES['file']['tmp_name'][$i];
-					$dest = $folder_name.'/' . $_FILES['file']['name'][$i];
-					
-					move_uploaded_file($file,$dest);
-					
-				  }
-				} 
-				else {
-				  echo 'Error：' . $_FILES['file']['error'][$i] . '<br/>';
-				}
-			  }
-		  }
-		  
-		  
-		 
-		 
+		 		 
           require_once('../config/database.php');
 		  
 		  $Modify = $_POST['Modify'];
@@ -46,7 +12,22 @@
           $Flag = $_POST['Flag'];
           
           if($Name == "cuTeTurt1eDe1eteU"){
-
+			  
+			  $dir=(string)$Point;
+			  if(is_dir($dir)){
+				
+				$file = scandir($dir);
+			    for($i=2;$i<sizeof($file);$i++){
+					
+					$f = $file[$i];
+					unlink($dir.'/'.$f);
+				}
+				rmdir($dir);
+			  }
+			  else{
+				  echo"not a dir";
+			  }
+			  
 			  $sql = "DELETE FROM Challenge WHERE pid = $Point";
 			  $statement = $db->prepare($sql);
 			  var_dump($statement->execute());
@@ -54,6 +35,36 @@
 			 
 		  }
           else if($Modify == -1){
+			  if($_POST['file'] === "upload"){
+				  
+				  $fileCount = count($_FILES['file']['tmp_name']);
+				  
+				  for ($i = 0; $i < $fileCount; $i++) {
+					# Error?
+					if ($_FILES['file']['error'][$i] === UPLOAD_ERR_OK){
+						
+					  $folder_name = (string)$_POST['lastpid'];
+					  mkdir($folder_name);
+					  chmod($folder_name, 0777);
+					  # File existed?
+					  if (file_exists($folder_name.'/' . $_FILES['file']['name'][$i])){
+						echo $folder_name;
+						echo 'This file has existed!。<br/>';
+					  } 
+					  else {
+						 
+						$file = $_FILES['file']['tmp_name'][$i];
+						$dest = $folder_name.'/' . $_FILES['file']['name'][$i];
+						
+						move_uploaded_file($file,$dest);
+						
+					  }
+					} 
+					else {
+					 // echo 'Error：' . $_FILES['file']['error'][$i] . '<br/>';
+					}
+				  }
+			  }
 			  
 			  $sql = "INSERT INTO Challenge VALUES(NULL,:Name,:Point,:Description,:Flag)";
 		      $statement = $db->prepare($sql);
@@ -126,24 +137,15 @@
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
   
     <script>
-    function doPost(modify)
+    function doModify(modify)
     {
-	  if(modify == -1){
-	    var Modify = modify;
-		var Name = document.getElementById('Name').value;
-		var Point = document.getElementById('Point').value;
-		var Description = document.getElementById('Description').value.replace(/\n|\r\n/g,"<br>");
-		var Flag = document.getElementById('Flag').value;		
-		
-	  }
-	  else{
+	 
 	    var Modify = modify;
 		var Name = document.getElementById('m_Name' + modify).value;
 		var Point = document.getElementById('m_Point' + modify).value;
 		var Description = document.getElementById('m_Description' + modify).value.replace(/\n|\r\n/g, "<br>");
 		var Flag = document.getElementById('m_Flag' + modify).value;
 		
-	  }
 	  $.post("admin/challenge.php",{Modify:Modify, Name:Name, Point:Point, Description:Description, Flag:Flag}, function(data){
         setTimeout('window.location.href = "admin/challenge.php"',100)
      
@@ -173,27 +175,28 @@
           <div class="row">
             <div class="col">
             <label >Name</label>
-              <input id="Name" class="form-control" type="text"  required>
+              <input name="Name" class="form-control" type="text"  required>
             </div>
             <div class="col">
             <label>Point</label>
-              <input id="Point" class="form-control" type="text"  required>
+              <input name="Point" class="form-control" type="text"  required>
             </div>
           </div>
           
           <label>Description</label>
-            <textarea id="Description" class="form-control des" type="text"  required></textarea>
+            <textarea name="Description" class="form-control des" type="text"  required></textarea>
           <label>Flag</label>
-            <input id="Flag" class="form-control" type="text"  required>
+            <input name="Flag" class="form-control" type="text"  required>
 		  <label>File input</label>
 		  <br>
+		    <input type="hidden" name="Modify" value="-1">
 		    <input type="hidden" name="file" value="upload">
 		    <input type="hidden" name="lastpid" value="<?php echo $last;?>">
             <input type="file" id="file" name="file[]" multiple> 
           <br>
 		  <br>
 		  <input type="reset" class="btn btn-primary" value="reset">
-          <input type="submit" name="submit" value="Submit" class="btn btn-primary" style="float:right;" onclick="doPost(-1)" >
+          <input type="submit" name="submit" value="Submit" class="btn btn-primary" style="float:right;" >
         </form>
 		<br>
 		<br>
@@ -228,24 +231,22 @@
 						</div>
 					  </div>
 					  <div class="modal-footer">
-					  
-					    <input type="hidden" name="folderpid" value="<?php echo $row['pid'] ?>">
-					    <input type="hidden" name="filedelete" value="<?php echo "delete";?>">
-						<input type="submit" id="<?php echo"delete". $row['pid'];?>" class="btn btn-danger"onclick="doDelete(<?php echo $row['pid']?>)" value="Yes">
+						<button type="button" id="<?php echo"delete". $row['pid'];?>" class="btn btn-danger"onclick="doDelete(<?php echo $row['pid']?>)">Yes</button>
 					  
 						<button type="button" class="btn btn-primary" role="button" data-dismiss="modal">No</button>
 					  </div>
 					</div>
 				  </div>
 			  </div>
-			  
+			 
 			  <td class = "tableW"><button type="button" role="button" data-toggle="modal" data-target="#<?php echo"modify". $row['pid'];?>" class="btn btn-outline-primary">Modify</button></td>
 			  <div class="modal fade" id="<?php echo"modify". $row['pid'];?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+				 
 				  <div class="modal-dialog" role="document">
 					<div class="modal-content">
 					  <div class="modal-body">
-					    <form method="post" action="admin/challenge.php">
-						  <div class="row">
+						
+						 <div class="row">
 							<div class="col">
 							<label>Name</label>
 							  <input id="<?php echo 'm_Name'. $row['pid'];?>" class="form-control" type="text" value="<?php echo $row['Name']?>" required>
@@ -261,11 +262,12 @@
 						  <label>Flag</label>
 							<input id="<?php echo 'm_Flag'. $row['pid'];?>" class="form-control" type="text" value="<?php echo $row['Flag']?>" required>
 						  <br>
-						  <input type="button"  id="<?php echo 'modify'. $row['pid'];?>" role="button" class="btn btn-primary"  value="Submit" style="float:right;" onclick="doPost(<?php echo $row['pid'];?>)">
-						</form>
+						  <input type="button"  id="<?php echo 'modify'. $row['pid'];?>" role="button" class="btn btn-primary"  value="Submit" style="float:right;" onclick="doModify(<?php echo $row['pid'];?>)">
+						
 					  </div>
 					</div>
 				  </div>
+				 
 			  </div>
 			  </tr>
 		  <?php
