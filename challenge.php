@@ -32,7 +32,10 @@
     .problems {
       
       width:100%;
-      height:150;
+      height:150px;
+    }
+    .problem-instance {
+        padding-bottom: 15px;
     }
     .rowh{
       height:170;
@@ -52,6 +55,8 @@
 </head>
 
 <body>
+  <div style='height: 54px;'></div>
+  <div class="container containerr">
   <h3>CHALLENGES</h3>
     <hr>
    <script>
@@ -77,7 +82,6 @@
 	</script>
 
 
-  <div class="container containerr">
 
 	<?php
 	  foreach($result as $row){
@@ -85,7 +89,7 @@
 	  <?php
 		if($count%4 == 0 ){
 	  ?>
-		<div class="row rowh">
+		<div class="row rowh problem-instance">
 	  <?php
 	    }
 	  ?>

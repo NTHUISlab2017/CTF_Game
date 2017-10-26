@@ -73,7 +73,7 @@
 			  $statement->bindParam(':Description', $Description);
 			  $statement->bindParam(':Flag', $Flag);
 			  var_dump($statement->execute());
-			 
+			  header("Location: http://final.duckll.tw/ctf/index.php"); 
 			  
 		  }else{
 			  $sql = "UPDATE Challenge SET Name=:Name, Point=:Point, Description=:Description, Flag=:Flag WHERE pid=:Modify";
@@ -147,7 +147,7 @@
 		var Flag = document.getElementById('m_Flag' + modify).value;
 		
 	  $.post("admin/challenge.php",{Modify:Modify, Name:Name, Point:Point, Description:Description, Flag:Flag}, function(data){
-        setTimeout('window.location.href = "admin/challenge.php"',100)
+        setTimeout('window.location.href = "http://final.duckll.tw/ctf/index.php"',100)
      
 	     })
  
@@ -160,13 +160,14 @@
       var Description = "0";
       var Flag = "0";
       $.post("admin/challenge.php",{Modify:Modify, Name:Name, Point:Point, Description:Description, Flag:Flag}, function(data){
-        setTimeout('window.location.href = "admin/challenge.php"',100)
+        setTimeout('window.location.href = "http://final.duckll.tw/ctf/index.php"',100)
 	     })
 	}
     </script>
 
 
     <div id="content" class="container">
+    <div class='row'>
       
       <div class="col-md-8 col-md-offset-2 mid">
         <h2>Add problem</h2>
@@ -277,6 +278,7 @@
 		</table>
       </div>
      
+    </div>
     </div>
   </body>
 </html>
