@@ -1,16 +1,26 @@
 <?php
- 
+
     require_once('config/database.php');
-  
+
     $sql = "SELECT COUNT(*)as c FROM Challenge";
     $stm = $db->prepare($sql);
     $stm -> execute();
     $sum = $stm->fetch(PDO::FETCH_ASSOC);
-    
+
     $sql = "SELECT * FROM Challenge";
     $stm = $db->prepare($sql);
     $stm -> execute();
     $result = $stm->fetchAll(PDO::FETCH_ASSOC);
+	
+	$uid = $_SESSION['uid'];
+	$sql = "SELECT * FROM Eventlog WHERE UID=$uid";
+    $stm = $db->prepare($sql);
+    $stm -> execute();
+    $color = $stm->fetchAll(PDO::FETCH_ASSOC);
+	
+	foreach($color as $row){
+		$correct[$row['PID']] = 1;
+	}
 
     $count = 0;
 ?>
@@ -20,7 +30,7 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
   <style type="text/css">
     .problems {
-      background-color:	#00DBDB;
+      
       width:100%;
       height:150;
     }
@@ -38,37 +48,37 @@
     .btsize{
 		width:100;
 	}
-  </style> 
+  </style>
 </head>
-  
+
 <body>
   <h3>CHALLENGES</h3>
     <hr>
    <script>
 	function messageGo(pid){
 
-	  var problemid = pid;     
-	  var flag = document.getElementById('flag' + pid).value;                                                 
+	  var problemid = pid;
+	  var flag = document.getElementById('flag' + pid).value;
 
 		$.ajax({
-			url:"flag.php",                                                              
-			data: {"problemid":problemid,"flag":flag},   
-			type : "POST",                                                                    
-			dataType:'text', 
-			error:function(){                                                                 
-             alert("error");
-            },
-			success:function(c){                                                      
-			 alert(c);
+			url:"flag.php",
+			data: {"problemid":problemid,"flag":flag},
+			type : "POST",
+			dataType:'text',
+			error:function(){
+                alert("error");
+                        },
+			success:function(c){
+			    alert(c) ;
 			}
-		}); 
+		});
 	}
-	
+
 	</script>
- 
- 
+
+
   <div class="container containerr">
-  
+
 	<?php
 	  foreach($result as $row){
 	?>
@@ -79,9 +89,17 @@
 	  <?php
 	    }
 	  ?>
-	  
-		<div class="col ">
-        <button type="button" class="btn btn-primary  problems" data-toggle="modal" data-target="#<?php echo"prob1em";echo $row['pid'];?>" role="button">
+
+	  <?php 
+		if($correct[$row['pid']]==1){
+		 $color_ = '#fc8df1';
+		}
+		else{
+	     $color_ = '#00DBDB';
+		}
+	  ?> 
+	    <div class="col ">
+        <button type="button" style="background-color:<?php echo $color_;?>;" class="btn btn-primary  problems" data-toggle="modal" data-target="#<?php echo"prob1em";echo $row['pid'];?>" role="button">
           <span class="tititle"><?php echo $row['Name']?></span><br><br>
           <span class="score"><i><?php echo $row['Point']?>pts</i></span><br>
         </button>
@@ -99,7 +117,7 @@
                 <?php echo $row['Description']?>
               </div>
 			  <form id="filedownload">
-				<?php 
+				<?php
 				   $dir='./admin/'.(string)$row['pid'];
 				   if(is_dir($dir)){
 					   $file = scandir($dir);
@@ -121,7 +139,7 @@
             </div>
           </div>
         </div>
-		
+
       </div>
 	  <?php
 		if($count+1 == $sum["c"] && $count%4 != 3){
@@ -152,7 +170,7 @@
 	?>
 
   </div>
-  
-  
+
+
 </body>
 </html>
